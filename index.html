@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>liveleis.com — vstup do LEIS</title>
+<meta name="description" content="liveleis.com — vstupní brána k LEIS mini webu.">
+<link rel="canonical" href="https://liveleis.com/">
+<style>
+  :root{
+    --ink:#e8eaf6; --muted:#9aa0b5; --accent:#7c5cff; --accent2:#22d3a6;
+    --glass:rgba(255,255,255,.06); --line:rgba(255,255,255,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    background:radial-gradient(circle at 50% 0%, #1e1b4b 0%, #09090b 100%);
+    color:var(--ink);
+    font:16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex; align-items:center; justify-content:center; padding:32px 20px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{width:100%;max-width:720px}
+  .card{
+    background:var(--glass); border:1px solid var(--line); border-radius:22px;
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    padding:38px 34px; box-shadow:0 24px 70px rgba(0,0,0,.55);
+  }
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .brand .mark{
+    width:42px;height:42px;border-radius:12px;flex:0 0 42px;
+    background:linear-gradient(140deg,var(--accent),var(--accent2));
+    display:grid;place-items:center;font-weight:700;color:#0b0b12;font-size:15px;letter-spacing:.5px;
+  }
+  .brand h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .brand p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+  h2{margin:0 0 10px;font-size:26px;line-height:1.25;font-weight:650}
+  p.lead{margin:0 0 24px;color:var(--muted)}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+  a.btn{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    padding:13px 20px;border-radius:13px;font-weight:600;font-size:15px;
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease;
+  }
+  a.primary{
+    background:linear-gradient(135deg,var(--accent),#5b8cff);color:#fff;
+    box-shadow:0 12px 30px rgba(124,92,255,.35);
+  }
+  a.primary:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(124,92,255,.45)}
+  a.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  a.ghost:hover{background:rgba(255,255,255,.05)}
+  .status{
+    display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:13px;
+    background:rgba(34,211,166,.07);border:1px solid rgba(34,211,166,.25);
+    font-size:14px;color:#c9f5e6;margin-bottom:22px;
+  }
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--accent2);flex:0 0 10px;
+    box-shadow:0 0 0 0 rgba(34,211,166,.7); animation:pulse 2s infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(34,211,166,.65)}
+    70%{box-shadow:0 0 0 12px rgba(34,211,166,0)}
+    100%{box-shadow:0 0 0 0 rgba(34,211,166,0)}
+  }
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+  .hint{font-size:13px;color:var(--muted);margin:0 0 6px}
+  @media (max-width:480px){ .card{padding:28px 20px} h2{font-size:22px} }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="card">
+    <div class="brand">
+      <div class="mark">LEIS</div>
+      <div>
+        <h1>liveleis.com</h1>
+        <p>Vstupní brána do LEIS · Living Evidence &amp; Integrity System</p>
+      </div>
+    </div>
+
+    <h2>Komunikace s LEIS</h2>
+    <p class="lead">Tato adresa je vstupem k běžícímu LEIS mini webu. Pokračujte tlačítkem níže — přesměrujeme vás automaticky.</p>
+
+    <div class="status">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="statusText">LEIS mini web je dostupný — přesměrování za <strong id="count">5</strong> s</span>
+    </div>
+
+    <div class="cta">
+      <a class="primary" href="https://liveleis.majlabs.eu/mini" id="go">Otevřít LEIS mini →</a>
+      <a class="ghost" href="https://liveleis.majlabs.eu/">Web LEIS</a>
+    </div>
+
+    <p class="hint">Adresa zůstává <strong>liveleis.com</strong>; aplikace běží na zabezpečeném <code>liveleis.majlabs.eu</code>.</p>
+
+    <footer>
+      <span>© <span id="yr">2026</span> Mybrainworks s.r.o. · liveleis.com</span>
+      <span>LEIS · evidence-led</span>
+    </footer>
+  </section>
+</main>
+<script>
+  (function(){
+    var target = "https://liveleis.majlabs.eu/mini";
+    var el = document.getElementById("count");
+    var s = 5;
+    document.getElementById("yr").textContent = new Date().getFullYear();
+    var t = setInterval(function(){
+      s--;
+      if (el) el.textContent = s;
+      if (s <= 0){ clearInterval(t); window.location.replace(target); }
+    }, 1000);
+  })();
+</script>
+</body>
+</html>
