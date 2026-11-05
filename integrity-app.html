@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LEIS • Analýza Důvěryhodnosti</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#e8eaf6',
+            muted: '#9aa0b5',
+            accent: '#7c5cff',
+            success: '#22d3a6',
+            danger: '#f43f5e',
+            warning: '#eab308'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #09090b 100%);
+      color: #e8eaf6;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+    }
+    .glass-input {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e8eaf6;
+      transition: all 0.2s;
+    }
+    .glass-input:focus {
+      outline: none;
+      border-color: #7c5cff;
+      box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.2);
+    }
+    .pulse-dot {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(34, 211, 166, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(34, 211, 166, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 211, 166, 0); }
+    }
+    .orb-1 { position: absolute; top: -10%; left: -10%; width: 300px; height: 300px; background: #7c5cff; border-radius: 50%; filter: blur(100px); opacity: 0.3; z-index: -1; pointer-events: none; }
+    .orb-2 { position: absolute; bottom: -10%; right: -10%; width: 400px; height: 400px; background: #22d3a6; border-radius: 50%; filter: blur(120px); opacity: 0.2; z-index: -1; pointer-events: none; }
+  </style>
+</head>
+<body class="relative overflow-x-hidden p-6 md:p-12 flex flex-col items-center">
+
+  <div class="orb-1"></div>
+  <div class="orb-2"></div>
+
+  <header class="w-full max-w-4xl flex justify-between items-center mb-12">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-blue-600 flex items-center justify-center font-bold text-lg shadow-[0_0_20px_rgba(124,92,255,0.4)]">
+        L
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">LEIS</h1>
+        <p class="text-xs text-muted uppercase tracking-widest">Integrity Check</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 text-sm text-muted bg-[rgba(255,255,255,0.05)] px-4 py-2 rounded-full border border-[rgba(255,255,255,0.05)]">
+      <div class="w-2 h-2 rounded-full bg-success pulse-dot"></div>
+      AI Scanner Připraven
+    </div>
+  </header>
+
+  <main class="w-full max-w-4xl flex flex-col gap-8">
+    
+    <section class="glass-card rounded-3xl p-8 md:p-10 relative overflow-hidden">
+      <h2 class="text-3xl font-bold mb-4">Analýza důvěryhodnosti textu</h2>
+      <p class="text-muted mb-8 max-w-2xl text-lg">
+        Vložte úřední dopis, politický projev, smlouvu nebo článek. LEIS Book Scanner forenzně zhodnotí jeho strukturu, logické rozpory a přítomnost manipulativních technik.
+      </p>
+
+      <div class="relative">
+        <textarea 
+          class="glass-input w-full rounded-2xl p-6 min-h-[200px] text-lg resize-y" 
+          placeholder="Vložte text nebo URL adresu článku k analýze..."
+        ></textarea>
+        
+        <div class="absolute bottom-6 right-6 flex gap-3">
+          <button class="bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] transition-colors px-6 py-3 rounded-xl font-medium backdrop-blur-md border border-[rgba(255,255,255,0.1)]">
+            Nahrát dokument (PDF)
+          </button>
+          <button class="bg-accent hover:bg-blue-600 transition-colors px-8 py-3 rounded-xl font-medium shadow-[0_0_20px_rgba(124,92,255,0.4)] flex items-center gap-2" onclick="simulateScan()">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            Skenovat integritu
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="results" class="glass-card rounded-3xl p-8 md:p-10 hidden opacity-0 transition-opacity duration-1000">
+      <div class="flex items-center justify-between mb-8 border-b border-[rgba(255,255,255,0.1)] pb-6">
+        <h3 class="text-2xl font-bold">Výsledek forenzní analýzy</h3>
+        <div class="text-right">
+          <div class="text-4xl font-bold text-warning"><span id="score-value">64</span> <span class="text-lg text-muted font-normal">/ 100</span></div>
+          <div class="text-sm text-muted uppercase tracking-wider mt-1">Skóre Integrity</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-6 hover:bg-[rgba(255,255,255,0.06)] transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-[rgba(34,211,166,0.1)] text-success flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h4 class="font-semibold text-lg">Fakta a zdroje</h4>
+          </div>
+          <p id="text-facts" class="text-muted text-sm leading-relaxed">Načítám z AI...</p>
+        </div>
+
+        <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-6 hover:bg-[rgba(255,255,255,0.06)] transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-[rgba(234,179,8,0.1)] text-warning flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h4 class="font-semibold text-lg">Strukturální rozpory</h4>
+          </div>
+          <p id="text-logic" class="text-muted text-sm leading-relaxed">Načítám z AI...</p>
+        </div>
+
+        <div class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)] rounded-2xl p-6 hover:bg-[rgba(255,255,255,0.06)] transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-[rgba(244,63,94,0.1)] text-danger flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h4 class="font-semibold text-lg">Emocionální manipulace</h4>
+          </div>
+          <p id="text-emotion" class="text-muted text-sm leading-relaxed">Načítám z AI...</p>
+        </div>
+
+      </div>
+      
+      <div class="mt-8 text-center">
+        <button id="btn-details" class="text-accent hover:text-white transition-colors text-sm font-medium px-4 py-2" onclick="showDetails()">
+          Zobrazit detailní forenzní rozpad ↓
+        </button>
+      </div>
+
+      <div id="details-section" class="hidden mt-8 border-t border-[rgba(255,255,255,0.1)] pt-8 opacity-0 transition-opacity duration-500">
+        <h4 class="text-xl font-bold mb-6">Detekované anomálie v textu</h4>
+        <div id="details-list" class="space-y-4">
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    async function simulateScan() {
+      const btn = document.querySelector('.bg-accent');
+      const textarea = document.querySelector('textarea');
+      const text = textarea.value.trim();
+      
+      if (!text) {
+        alert("Vložte prosím nejprve text k analýze.");
+        return;
+      }
+      
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      
+      const thinkingPhases = [
+        "LEIS aktivuje expertní moduly 🧠",
+        "Dekonstruuji kontext a tvrzení 🧠🧠",
+        "Analyzuji kauzalitu a fakta 🧠🧠🧠",
+        "Syntetizuji forenzní výsledek 🧠🧠🧠🧠",
+        "Ověřuji logickou integritu 🧠🧠🧠🧠🧠"
+      ];
+      
+      let phaseIndex = 0;
+      btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block align-middle mr-2"></div><span id="scan-phase-text">${thinkingPhases[phaseIndex]}</span>`;
+      
+      const phaseInterval = setInterval(() => {
+        phaseIndex = (phaseIndex + 1) % thinkingPhases.length;
+        const textSpan = document.getElementById('scan-phase-text');
+        if (textSpan) textSpan.innerText = thinkingPhases[phaseIndex];
+      }, 4000);
+      
+      try {
+        const response = await fetch('http://100.77.108.70:5098/api/v1/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text })
+        });
+        clearInterval(phaseInterval);
+        
+        if (response.status === 429) {
+          throw new Error('Limit dotazů vyčerpán. Počkejte 20 vteřin a zkuste to znovu.');
+        } else if (!response.ok) {
+          throw new Error('Omlouváme se, AI Scanner je momentálně přetížen.');
+        }
+        
+        const data = await response.json();
+        
+        // Populate results
+        document.getElementById('score-value').textContent = data.score;
+        document.getElementById('text-facts').textContent = data.facts || 'Data nebyla vrácena.';
+        document.getElementById('text-logic').textContent = data.logic || 'Data nebyla vrácena.';
+        document.getElementById('text-emotion').textContent = data.emotion || 'Data nebyla vrácena.';
+        
+        // Dynamicky vykreslit detaily (pokud existují)
+        const detailsContainer = document.getElementById('details-list');
+        detailsContainer.innerHTML = '';
+        if (data.details && Array.isArray(data.details)) {
+            data.details.forEach(d => {
+                let colorClass = 'success';
+                if (d.type.toLowerCase().includes('logic')) colorClass = 'warning';
+                if (d.type.toLowerCase().includes('emoc') || d.type.toLowerCase().includes('klam')) colorClass = 'danger';
+                
+                detailsContainer.innerHTML += `
+                  <div class="p-5 bg-[rgba(255,255,255,0.03)] border-l-4 border-${colorClass} rounded-r-xl">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-bold text-${colorClass} uppercase tracking-wider bg-[rgba(255,255,255,0.1)] px-2 py-1 rounded">${d.type}</span>
+                    </div>
+                    <p class="text-lg italic text-[rgba(255,255,255,0.9)]">„${d.quote}“</p>
+                    <p class="text-sm text-muted mt-3"><strong class="text-white">Forenzní analýza:</strong> ${d.analysis}</p>
+                  </div>
+                `;
+            });
+        }
+        
+        btn.innerHTML = 'Skenování dokončeno';
+        const res = document.getElementById('results');
+        res.classList.remove('hidden');
+        void res.offsetWidth;
+        res.classList.remove('opacity-0');
+        
+      } catch (e) {
+        clearInterval(phaseInterval);
+        alert(e.message);
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+      }
+    }
+
+    function showDetails() {
+      const det = document.getElementById('details-section');
+      const btn = document.getElementById('btn-details');
+      
+      det.classList.remove('hidden');
+      void det.offsetWidth;
+      det.classList.remove('opacity-0');
+      btn.style.display = 'none';
+      setTimeout(() => {
+        det.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  </script>
+</body>
+</html>
